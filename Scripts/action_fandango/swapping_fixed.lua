@@ -1,5 +1,3 @@
-local Widget = require('te.widget')
-
 local template = {
     name = 'Swapping Fixed',
     description = 'Keep one native wheel and let the secondary group key return to Abilities on its next tap.',
@@ -13,15 +11,6 @@ local template = {
             tab=true, level=4, order=1}},
     },
 }
-
-local function findHud(service, switcher)
-    local node = switcher
-    for _=1,20 do
-        if not service:valid(node) then return nil end
-        if service:identity(node):find('WBP_GameHUD_C',1,true) then return node end
-        node = service:parent(node)
-    end
-end
 
 local function validate(configuration)
     if configuration.access ~= 1 then
@@ -41,14 +30,16 @@ local function validate(configuration)
     return true
 end
 
-function template:attach(service, switcher, configuration, previous)
+function template:attach(service, switcher, configuration, previous, shared)
     local ready,why = validate(configuration)
     if not ready then return nil,why end
     if not service:valid(switcher) or switcher:GetChildrenCount() ~= 2 then
         return nil,'native quickslots switcher unavailable'
     end
-    local hud = findHud(service,switcher)
-    local ability = hud and Widget.property(hud,'WBP_AA_Quickslots')
+    if type(shared) ~= 'table' or not service:same(shared.switcher, switcher) then
+        return nil,'quickslots category handle unavailable'
+    end
+    local ability = shared.ability
     if not service:valid(ability) or not service:same(service:parent(ability),switcher) then
         return nil,'native Ability wheel unavailable'
     end

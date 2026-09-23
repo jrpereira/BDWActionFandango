@@ -120,14 +120,18 @@ assert(prompt.opacity==1)
 
 local fixedConfig={access=1,settings={PrimaryWheel=1},
     groups={['1']={key=0,mode=-1},['2']={key=164,mode=0}}}
-local fixedState,fixedError=fixed:attach(service,switcher,fixedConfig,nil)
+shared=category:attach(service,switcher,fixedConfig,nil,fixed)
+local fixedState,fixedError=fixed:attach(service,switcher,fixedConfig,nil,shared)
 assert(fixedState,fixedError)
 assert(switcher:GetActiveWidgetIndex()==0 and switcher:GetChildrenCount()==2)
 assert(fixed:render(service,fixedState,switcher,'GroupSelected')=='applied')
 assert(fixed:detach(service,fixedState,'disable'))
+assert(category:detach(service,shared,'disable'))
 assert(switcher:GetActiveWidgetIndex()==1)
 local wrongAccess=select(1,fixed:attach(service,switcher,{access=0,settings={PrimaryWheel=1}},nil))
 assert(wrongAccess==nil and switcher:GetActiveWidgetIndex()==1)
+local missingCategory,missingError=fixed:attach(service,switcher,fixedConfig,nil)
+assert(missingCategory==nil and missingError:find('category handle unavailable',1,true))
 
 function switcher:AddChild(child)
     if child==ability then return nil end
