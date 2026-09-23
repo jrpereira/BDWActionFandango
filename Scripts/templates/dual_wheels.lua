@@ -38,8 +38,8 @@ local template = {
     },
 }
 
-local function settings(configuration)
-    local source = configuration.settings or {}
+local function parseSettings(source)
+    source = source or {}
     local function integer(name, default, minimum, maximum)
         local value = source[name]
         if value == nil then value = default end
@@ -117,11 +117,11 @@ local function apply(service,state,config)
     state.primary, state.secondary = primary,secondary
 end
 
-function template:attach(service,switcher,configuration,previous,shared)
-    if configuration.access ~= nil and configuration.access ~= 0 and configuration.access ~= 2 then
+function template:attach(service,switcher,settings,previous,shared)
+    if settings.access ~= nil and settings.access ~= 0 and settings.access ~= 2 then
         return nil, 'Dual Wheels requires Individual or Advanced direct slot input'
     end
-    local config=settings(configuration)
+    local config=parseSettings(settings)
     if previous then
         local ok,err=pcall(restore,service,previous)
         if not ok then return nil,err end

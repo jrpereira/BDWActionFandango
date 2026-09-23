@@ -47,15 +47,14 @@ for _,row in ipairs(page.rows) do
 end
 for name,item in pairs(definitions) do
     defaults[selector.id]=item.value
-    local configuration=menu.decode(defaults)['player.quickslots'].configuration
-    assert(configuration.categorySettings.AccessMode==0)
-    assert(configuration.settings.AccessMode==nil)
-    assert(configuration.settings.PrimaryWheel==(name=='Dual Wheels' and 0 or 1))
+    local settings=menu.decode(defaults)['player.quickslots'].settings
+    assert(settings.AccessMode==0)
+    assert(settings.PrimaryWheel==(name=='Dual Wheels' and 0 or 1))
 end
 defaults[selector.id]=definitions['Dual Wheels'].value
 defaults[categoryInput]=2
-local advanced=menu.decode(defaults)['player.quickslots'].configuration
-assert(advanced.access==2 and advanced.categorySettings.AccessMode==2)
+local advanced=menu.decode(defaults)['player.quickslots'].settings
+assert(advanced.access==2 and advanced.AccessMode==2)
 local advancedPlan=Plan.build(byName['Dual Wheels'],advanced,
     te.categories:getCategory('player.quickslots'))
 assert(#advancedPlan.actions==16 and advancedPlan.actions[1].slot==1
@@ -71,7 +70,7 @@ local service = {
         return true
     end,
 }
-local state={configuration=advanced,selectedGroup=1,defaultGroup=1}
+local state={settings=advanced,selectedGroup=1,defaultGroup=1}
 for _,action in ipairs(advancedPlan.actions) do
     if action.slot then
         state.selectedGroup=action.groupIndex==1 and 2 or 1
@@ -93,7 +92,7 @@ for _,action in ipairs(advancedPlan.actions) do
     end
 end
 local plan=Plan.build(byName['Swapping Fixed'],{
-    access=1,settings={PrimaryWheel=1},
+    access=1,PrimaryWheel=1,
     groups={['1']={key=0,mode=-1},['2']={key=164,mode=0}},
     shared={{key=49,mode=0},{key=50,mode=0},{key=51,mode=0},{key=52,mode=0}},
 },te.categories:getCategory('player.quickslots'))

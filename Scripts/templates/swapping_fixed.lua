@@ -12,14 +12,14 @@ local template = {
     },
 }
 
-local function validate(configuration)
-    if configuration.access ~= 1 then
+local function validate(settings)
+    if settings.access ~= 1 then
         return nil, 'Swapping Fixed requires Activate group first input'
     end
-    if not configuration.settings or configuration.settings.PrimaryWheel ~= 1 then
+    if settings.PrimaryWheel ~= 1 then
         return nil, 'Swapping Fixed currently requires Abilities as the default wheel'
     end
-    local groups = configuration.groups or {}
+    local groups = settings.groups or {}
     local ability, consumable = groups['1'], groups['2']
     if not ability or ability.mode ~= -1 then
         return nil, 'set Abilities group to Default'
@@ -30,8 +30,8 @@ local function validate(configuration)
     return true
 end
 
-function template:attach(service, switcher, configuration, previous, shared)
-    local ready,why = validate(configuration)
+function template:attach(service, switcher, settings, previous, shared)
+    local ready,why = validate(settings)
     if not ready then return nil,why end
     if not service:valid(switcher) or switcher:GetChildrenCount() ~= 2 then
         return nil,'native quickslots switcher unavailable'

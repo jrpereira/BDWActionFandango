@@ -73,7 +73,7 @@ hud.WBP_AA_Quickslots=ability
 hud.WBP_HUD_Quickslots=consumable
 hud.WBP_HUD_Quickslots_ChangePrompt=prompt
 
-local firstConfig={access=0,settings={Arrangement=0,Gap=360}}
+local firstConfig={access=0,Arrangement=0,Gap=360}
 local shared=category:attach(service,switcher,firstConfig,nil,template)
 local handle,err=template:attach(service,switcher,firstConfig,nil,shared)
 assert(handle,err)
@@ -82,7 +82,7 @@ assert(ability:GetParent()==owner)
 assert(ability.RenderTransform.Translation.X==20 and ability.RenderTransform.Translation.Y==-320)
 assert(prompt.opacity==0)
 
-local secondConfig={access=0,settings={Arrangement=1,PrimaryWheel=1,X=-40,Y=60,Gap=300}}
+local secondConfig={access=0,Arrangement=1,PrimaryWheel=1,X=-40,Y=60,Gap=300}
 shared=category:attach(service,switcher,secondConfig,shared,template)
 local second,secondError=template:attach(service,switcher,secondConfig,handle,shared)
 assert(second,secondError)
@@ -98,7 +98,7 @@ assert(prompt.opacity==1)
 assert(ability.RenderTransform.Translation.X==0 and ability.RenderTransform.Translation.Y==0)
 assert(consumable.RenderTransform.Translation.X==0 and consumable.RenderTransform.Translation.Y==0)
 
-local advancedConfig={access=2,settings={PrimaryWheel=1}}
+local advancedConfig={access=2,PrimaryWheel=1}
 shared=category:attach(service,switcher,advancedConfig,nil,template)
 local advanced,advancedError=template:attach(service,switcher,advancedConfig,nil,shared)
 assert(advanced,advancedError)
@@ -107,7 +107,7 @@ assert(template:detach(service,advanced,'disable'))
 assert(category:detach(service,shared,'disable'))
 assert(switcher:GetChildrenCount()==2 and switcher:GetActiveWidgetIndex()==1)
 
-local rejectedConfig={access=1,settings={}}
+local rejectedConfig={access=1,}
 shared=category:attach(service,switcher,rejectedConfig,nil,template)
 local rejected,message=template:attach(service,switcher,rejectedConfig,nil,shared)
 assert(category:detach(service,shared,'attach_failed'))
@@ -120,14 +120,14 @@ function owner:AddChild(child)
     return addChild(self,child)
 end
 local failed,failure=pcall(function()
-    return category:attach(service,switcher,{access=0,settings={PrimaryWheel=0}},nil,template)
+    return category:attach(service,switcher,{access=0,PrimaryWheel=0},nil,template)
 end)
 assert(not failed and failure:find('could not attach secondary wheel to owner',1,true))
 assert(switcher:GetChildrenCount()==2 and switcher:GetChildAt(0)==ability
     and switcher:GetChildAt(1)==consumable)
 assert(prompt.opacity==1)
 
-local fixedConfig={access=1,settings={PrimaryWheel=1},
+local fixedConfig={access=1,PrimaryWheel=1,
     groups={['1']={key=0,mode=-1},['2']={key=164,mode=0}}}
 shared=category:attach(service,switcher,fixedConfig,nil,fixed)
 local fixedState,fixedError=fixed:attach(service,switcher,fixedConfig,nil,shared)
@@ -137,7 +137,7 @@ assert(fixed:render(service,fixedState,switcher,'GroupSelected')=='applied')
 assert(fixed:detach(service,fixedState,'disable'))
 assert(category:detach(service,shared,'disable'))
 assert(switcher:GetActiveWidgetIndex()==1)
-local wrongAccess=select(1,fixed:attach(service,switcher,{access=0,settings={PrimaryWheel=1}},nil))
+local wrongAccess=select(1,fixed:attach(service,switcher,{access=0,PrimaryWheel=1},nil))
 assert(wrongAccess==nil and switcher:GetActiveWidgetIndex()==1)
 local missingCategory,missingError=fixed:attach(service,switcher,fixedConfig,nil)
 assert(missingCategory==nil and missingError:find('category handle unavailable',1,true))
@@ -147,7 +147,7 @@ function switcher:AddChild(child)
     return addChild(self,child)
 end
 local unrestored,restoreFailure=pcall(function()
-    return category:attach(service,switcher,{access=0,settings={PrimaryWheel=0}},nil,template)
+    return category:attach(service,switcher,{access=0,PrimaryWheel=0},nil,template)
 end)
 assert(not unrestored and restoreFailure:find('could not attach secondary wheel to owner',1,true),restoreFailure)
 print('Action Fandango template lifecycle passed')
