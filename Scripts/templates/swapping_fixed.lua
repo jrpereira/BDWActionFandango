@@ -7,7 +7,7 @@ local template = {
         groups = {{id='Behavior', label='Behavior', level=4}},
         fields = {{id='PrimaryWheel', type='picker', group='Behavior', label='Default Wheel',
             description='Abilities supports the one-key return. Consumables needs a TE group-order update.',
-            values={1,0}, labels={'Abilities','Consumables (pending)'}, default=1,
+            values={1,0}, labels={'Abilities','Consumables'}, default=1,
             tab=true, level=4, order=1}},
     },
 }
