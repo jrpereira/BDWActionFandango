@@ -12,7 +12,7 @@ local template = {
         fields = {
             {id='AdvancedOptions', type='navigation', group='Options', label='Advanced Options',
                 values={0,1,2}, labels={'More...','Primary','Secondary'},
-                default=0, tab=true, level=2, order=1},
+                default=0, tab=true, tabNavigation=1, level=2, order=1},
             {id='PrimaryWheel', type='picker', group='Options', label='Default Wheel',
                 description='Choose which wheel occupies the default position.',
                 values={1,0}, labels={'Abilities','Consumables'},

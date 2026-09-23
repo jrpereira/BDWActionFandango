@@ -44,6 +44,7 @@ for _,value in ipairs(values) do
     assert(optionsRow.PresetValues=='0|1|2'
         and optionsRow.PresetLabels=='More...|Primary|Secondary'
         and optionsRow.ammLevel==2 and optionsRow.ammNavigation==1
+        and optionsRow.tabNavigation==1
         and optionsRow.ConfigFile==nil and optionsRow.ConfigKey==nil)
     local views={
         [0]={'PrimaryWheel','Arrangement'},
