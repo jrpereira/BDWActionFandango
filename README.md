@@ -29,7 +29,7 @@ registered in that profile or installed as a playable mod yet. In-game layout,
 input, and game lifecycle behavior have not been accepted.
 
 When TE supports the native cutover, it must register
-`ActionFandango/Scripts/action_fandango.lua` and generate both menu choices.
+`ActionFandango/Scripts/templates/main.lua` and generate both menu choices.
 Selecting either choice in the `player.quickslots` category replaces the previous
 quickslots template because the category allows one active template. Dual Wheels
 refuses group-first input; Swapping Fixed refuses direct slot input and unsupported
@@ -49,7 +49,7 @@ lua5.4 ActionFandango/tests/template_test.lua
 
 ## Development layout
 
-- `Scripts/action_fandango.lua`: the single TE registration entry point.
+- `Scripts/templates/main.lua`: the single TE registration entry point.
 - `Scripts/templates/`: the two runtime templates and their menu settings.
 - `tests/`: focused offline regressions.
 - `tools/`: build and package scripts if a release workflow is added; tools must

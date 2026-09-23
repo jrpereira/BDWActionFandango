@@ -1,6 +1,6 @@
 local root = (arg[0] or ''):match('^(.*)/tests/template_test%.lua$') or '.'
 package.path = root .. '/../UE4SSTemplatingEngine/Scripts/?.lua;' .. package.path
-local header, choices = dofile(root .. '/Scripts/action_fandango.lua')
+local header, choices = dofile(root .. '/Scripts/templates/main.lua')
 local category = dofile(root .. '/../UE4SSTemplatingEngine/Scripts/categories/player_quickslots.lua')
 assert(header.category=='player.quickslots' and #choices==2)
 local fixed,template=choices[1],choices[2]

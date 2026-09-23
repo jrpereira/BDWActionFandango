@@ -6,7 +6,7 @@ local te = TE.new({
     categoriesFolder='UE4SSTemplatingEngine/Scripts/categories',
     listFiles=function() return {} end,
 })
-te:registerTemplate('ActionFandango/Scripts/action_fandango.lua')
+te:registerTemplate('ActionFandango/Scripts/templates/main.lua')
 assert(te:loadTemplatesFromRegister()==2)
 local menu=te:generateMenu()
 assert(menu.providers['UE4SSTemplatingEngine.module.ActionFandango'])
