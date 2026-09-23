@@ -1,6 +1,8 @@
 local root = (arg[0] or ''):match('^(.*)/tests/template_test%.lua$') or '.'
 package.path = root .. '/../UE4SSTemplatingEngine/Scripts/?.lua;' .. package.path
-local template = dofile(root .. '/templates/action_fandango.lua')
+local header, choices = dofile(root .. '/templates/action_fandango.lua')
+assert(header.category=='player.quickslots' and #choices==2)
+local fixed,template=choices[1],choices[2]
 
 local function widget(name)
     local w = {
@@ -105,4 +107,25 @@ assert(failed==nil and failure:find('cannot display secondary wheel',1,true))
 assert(switcher:GetChildrenCount()==2 and switcher:GetChildAt(0)==ability
     and switcher:GetChildAt(1)==consumable)
 assert(prompt.opacity==1)
+
+local fixedConfig={access=1,settings={PrimaryWheel=1},
+    groups={['1']={key=0,mode=-1},['2']={key=164,mode=0}}}
+local fixedState,fixedError=fixed:attach(service,switcher,fixedConfig,nil)
+assert(fixedState,fixedError)
+assert(switcher:GetActiveWidgetIndex()==0 and switcher:GetChildrenCount()==2)
+assert(fixed:render(service,fixedState,switcher,'GroupSelected')=='applied')
+assert(fixed:detach(service,fixedState,'disable'))
+assert(switcher:GetActiveWidgetIndex()==1)
+local wrongAccess=select(1,fixed:attach(service,switcher,{access=0,settings={PrimaryWheel=1}},nil))
+assert(wrongAccess==nil and switcher:GetActiveWidgetIndex()==1)
+
+function switcher:AddChild(child)
+    if child==ability then return nil end
+    return addChild(self,child)
+end
+local unrestored,restoreFailure=template:attach(service,switcher,
+    {access=0,settings={PrimaryWheel=0}},nil)
+assert(unrestored==nil and restoreFailure:find('cannot display secondary wheel',1,true)
+    and restoreFailure:find('restoration failed:',1,true)
+    and restoreFailure:find('failed to restore wheel',1,true), restoreFailure)
 print('Action Fandango template lifecycle passed')
