@@ -33,6 +33,8 @@ for _,value in ipairs(values) do
     local definition=assert(menu.definitions['player.quickslots'][value])
     local name=te.registry.byId[definition.id].template.name
     definitions[name]={value=value,definition=definition}
+    assert(page.rows[assert(positions[definition.settings.PrimaryWheel])].Label=='Default Wheel',
+        name .. ' must display Default Wheel in the module menu')
     assert(definition.access)
     assert(definition.direct['1'] and #definition.direct['1']==4)
     assert(definition.direct['2'] and #definition.direct['2']==4)
