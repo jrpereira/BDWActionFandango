@@ -39,7 +39,8 @@ for _,value in ipairs(values) do
     local advancedOptions=assert(definition.settings.AdvancedOptions)
     local optionsRow=settingRow('AdvancedOptions')
     assert(optionsRow.PresetValues=='0|1|2'
-        and optionsRow.PresetLabels=='More...|Primary|Secondary')
+        and optionsRow.PresetLabels=='More...|Primary|Secondary'
+        and optionsRow.ammLevel==1 and optionsRow.ammHeader==nil)
     local views={
         [0]={'PrimaryWheel','Arrangement'},
         [1]={'X','Y','PrimarySize','PrimaryOpacity'},
