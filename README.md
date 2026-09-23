@@ -1,6 +1,6 @@
 # Action Fandango
 
-Action Fandango provides one UE4SS Templating Engine (TE) quickslots template for
+Action Fandango provides one KEngineTemplates (KET) quickslots template for
 *The Blood of Dawnwalker*. It uses the four existing Ability and four existing
 Consumable slots and creates no new skills.
 
@@ -21,7 +21,7 @@ The source module name is `ActionFandango`; the intended GitHub repository name 
 
 ## Current status
 
-Wheels++ passes offline template lifecycle and TE registration checks. TE owns
+Wheels++ passes offline template lifecycle and KET registration checks. KET owns
 native input and selection; Action Fandango owns the wheel layout. In-game layout,
 input, and lifecycle behavior still need live acceptance.
 
@@ -39,7 +39,7 @@ lua5.4 ActionFandango/tests/template_test.lua
 
 ## Development layout
 
-- `Scripts/templates/main.lua`: the single TE registration entry point.
+- `Scripts/templates/main.lua`: the single KET registration entry point.
 - `Scripts/templates/`: the active Wheels++ template and its menu settings.
 - `tests/`: focused offline regressions.
 - `tools/`: build and package scripts if a release workflow is added; tools must

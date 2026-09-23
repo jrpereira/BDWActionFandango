@@ -1,16 +1,15 @@
 package.path = 'UE4SSTemplatingEngine/Scripts/?.lua;' .. package.path
-local TE = require('te.init')
-local Plan = require('te.player_actions.plan')
-local Delivery = require('te.player_actions.delivery')
+local TE = require('ket.init')
+local Plan = require('ket.player_actions.plan')
+local Delivery = require('ket.player_actions.delivery')
 local te = TE.new({
-    categoriesPath='UE4SSTemplatingEngine/Scripts/categories.lua',
     categoriesFolder='UE4SSTemplatingEngine/Scripts/categories',
     listFiles=function() return {} end,
 })
 te:registerTemplate('ActionFandango/Scripts/templates/main.lua')
 assert(te:loadTemplatesFromRegister()==1)
 local menu=te:generateMenu()
-local page=assert(menu.providers['UE4SSTemplatingEngine.module.ActionFandango'])
+local page=assert(menu.providers['KEngineTemplates.module.ActionFandango'])
 local selector=assert(menu.selectors['player.quickslots'])
 local values={}
 for value in pairs(selector.byValue) do values[#values+1]=value end
@@ -124,4 +123,4 @@ for _,action in ipairs(advancedPlan.actions) do
         activated={}
     end
 end
-print('Action Fandango TE registration passed')
+print('Action Fandango KET registration passed')

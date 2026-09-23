@@ -1,4 +1,4 @@
-local Widget = require('te.widget')
+local Widget = require('ket.widget')
 local layoutDistance = 360
 
 local template = {
