@@ -8,13 +8,13 @@ local te = TE.new({
     listFiles=function() return {} end,
 })
 te:registerTemplate('ActionFandango/Scripts/templates/main.lua')
-assert(te:loadTemplatesFromRegister()==2)
+assert(te:loadTemplatesFromRegister()==1)
 local menu=te:generateMenu()
 local page=assert(menu.providers['UE4SSTemplatingEngine.module.ActionFandango'])
 local selector=assert(menu.selectors['player.quickslots'])
 local values={}
 for value in pairs(selector.byValue) do values[#values+1]=value end
-assert(#values==2)
+assert(#values==1)
 local byName={}
 local definitions={}
 for _,entry in ipairs(te.registry.templates) do
@@ -22,7 +22,7 @@ for _,entry in ipairs(te.registry.templates) do
         and entry.template.single==true)
     byName[entry.template.name]=entry.template
 end
-assert(byName['Swapping Fixed'] and byName['Dual Wheels'])
+assert(byName['Wheels++'] and byName['Wheels++'].detachSecondaryWheel)
 local positions, categoryInput={}
 for index,row in ipairs(page.rows) do
     if row.Id then positions[row.Id]=index end
@@ -35,6 +35,9 @@ for _,value in ipairs(values) do
     definitions[name]={value=value,definition=definition}
     assert(page.rows[assert(positions[definition.settings.PrimaryWheel])].Label=='Default Wheel',
         name .. ' must display Default Wheel in the module menu')
+    local layout=page.rows[assert(positions[definition.settings.Arrangement])]
+    assert(layout.Label=='Layout' and layout.PresetValues=='2|0|1'
+        and layout.PresetLabels=='Overlap|Stacked|Side by side')
     assert(definition.access)
     assert(definition.direct['1'] and #definition.direct['1']==4)
     assert(definition.direct['2'] and #definition.direct['2']==4)
@@ -51,13 +54,13 @@ for name,item in pairs(definitions) do
     defaults[selector.id]=item.value
     local settings=menu.decode(defaults)['player.quickslots'].settings
     assert(settings.AccessMode==0)
-    assert(settings.PrimaryWheel==(name=='Dual Wheels' and 0 or 1))
+    assert(settings.PrimaryWheel==1 and settings.Arrangement==0)
 end
-defaults[selector.id]=definitions['Dual Wheels'].value
+defaults[selector.id]=definitions['Wheels++'].value
 defaults[categoryInput]=2
 local advanced=menu.decode(defaults)['player.quickslots'].settings
 assert(advanced.access==2 and advanced.AccessMode==2)
-local advancedPlan=Plan.build(byName['Dual Wheels'],advanced,
+local advancedPlan=Plan.build(byName['Wheels++'],advanced,
     te.categories:getCategory('player.quickslots'))
 assert(#advancedPlan.actions==16 and advancedPlan.actions[1].slot==1
     and advancedPlan.actions[9].targetSlot==1)
@@ -76,7 +79,7 @@ local state={settings=advanced,selectedGroup=1,defaultGroup=1}
 for _,action in ipairs(advancedPlan.actions) do
     if action.slot then
         state.selectedGroup=action.groupIndex==1 and 2 or 1
-        assert(Delivery.deliver(byName['Dual Wheels'],state,action,'Triggered',service))
+        assert(Delivery.deliver(byName['Wheels++'],state,action,'Triggered',service))
         assert(#activated==0,'inactive Advanced group must not activate a slot')
         local groupKey
         for _,candidate in ipairs(advancedPlan.actions) do
@@ -85,19 +88,12 @@ for _,action in ipairs(advancedPlan.actions) do
                 break
             end
         end
-        assert(groupKey and Delivery.deliver(byName['Dual Wheels'],state,groupKey,'Triggered',service))
+        assert(groupKey and Delivery.deliver(byName['Wheels++'],state,groupKey,'Triggered',service))
         assert(state.selectedGroup==action.groupIndex and nativeSelections==0)
-        assert(Delivery.deliver(byName['Dual Wheels'],state,action,'Triggered',service))
+        assert(Delivery.deliver(byName['Wheels++'],state,action,'Triggered',service))
         assert(#activated==1 and activated[1][1]==action.type
             and activated[1][2]==action.slot)
         activated={}
     end
 end
-local plan=Plan.build(byName['Swapping Fixed'],{
-    access=1,PrimaryWheel=1,
-    groups={['1']={key=0,mode=-1},['2']={key=164,mode=0}},
-    shared={{key=49,mode=0},{key=50,mode=0},{key=51,mode=0},{key=52,mode=0}},
-},te.categories:getCategory('player.quickslots'))
-assert(#plan.actions==6 and plan.actions[1].binding.mode==-1
-    and plan.actions[2].binding.key==164)
 print('Action Fandango TE registration passed')

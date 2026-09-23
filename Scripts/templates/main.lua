@@ -8,8 +8,9 @@ end
 
 local header = {
     category = 'player.quickslots',
-    single = true,
+    name = "Action Fandango",
     version = '0.1.0',
+    single = true,
 }
 
-return header, {load('swapping_fixed'),load('dual_wheels')}
+return header, {load('wheels_plus')}

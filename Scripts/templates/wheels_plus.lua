@@ -1,8 +1,8 @@
 local Widget = require('te.widget')
 
 local template = {
-    name = 'Dual Wheels',
-    description = 'Two always-visible action wheels with a separate input for every existing slot.',
+    name = 'Wheels++',
+    description = 'Show both native quickslot wheels with direct keys and a choice of three layouts.',
     detachSecondaryWheel = true,
     settings = {
         target = 'module',
@@ -13,18 +13,22 @@ local template = {
             {id='Secondary', label='Secondary Wheel', level=4},
         },
         fields = {
-            {id='Arrangement', type='picker', group='Layout', label='Arrangement',
-                description='Place both action wheels vertically or side by side.',
-                values={0,1}, labels={'Stacked','Side by side'}, default=0, tab=true, level=4, order=1},
+            {id='Arrangement', type='picker', group='Layout', label='Layout',
+                description='Choose overlapping, stacked, or side by side wheels.',
+                values={2,0,1}, labels={'Overlap','Stacked','Side by side'},
+                default=0, tab=true, level=4, order=1},
             {id='PrimaryWheel', type='picker', group='Layout', label='Default Wheel',
-                description='Choose which group occupies the default position. Inputs stay with their skills.',
-                values={0,1}, labels={'Consumables','Abilities'}, default=0, tab=true, level=4, order=2},
-            {id='X', type='integer', group='Layout', label='X', description='Default wheel horizontal offset.',
+                description='Choose which wheel occupies the default position.',
+                values={1,0}, labels={'Abilities','Consumables'},
+                default=1, tab=true, level=4, order=2},
+            {id='X', type='integer', group='Layout', label='X',
+                description='Default wheel horizontal offset.',
                 min=-1000, max=1000, step=10, default=20, order=3},
-            {id='Y', type='integer', group='Layout', label='Y', description='Default wheel vertical offset.',
+            {id='Y', type='integer', group='Layout', label='Y',
+                description='Default wheel vertical offset.',
                 min=-1000, max=1000, step=10, default=40, order=4},
             {id='Gap', type='integer', group='Layout', label='Spacing',
-                description='Distance between the two action wheels.',
+                description='Distance between wheels in stacked and side by side layouts.',
                 min=100, max=800, step=10, default=360, order=5},
             {id='PrimarySize', type='integer', group='Primary', label='Size',
                 min=25, max=200, step=5, suffix='%', default=100, order=1},
@@ -48,7 +52,7 @@ local function parseSettings(source)
         return value
     end
     return {
-        arrangement=integer('Arrangement',0,0,1), primaryWheel=integer('PrimaryWheel',0,0,1),
+        arrangement=integer('Arrangement',0,0,2), primaryWheel=integer('PrimaryWheel',0,0,1),
         x=integer('X',20,-1000,1000), y=integer('Y',40,-1000,1000), gap=integer('Gap',360,100,800),
         primarySize=integer('PrimarySize',100,25,200),
         primaryOpacity=integer('PrimaryOpacity',100,0,100),
@@ -108,6 +112,7 @@ local function apply(service,state,config)
     Widget.setTranslation(state.switcher,config.x,config.y)
     local sx,sy=config.x,config.y-config.gap
     if config.arrangement==1 then sx,sy=config.x+config.gap,config.y end
+    if config.arrangement==2 then sx,sy=config.x,config.y end
     Widget.setTranslation(secondary,sx,sy)
     Widget.setScale(primary,config.primarySize/100)
     Widget.setScale(secondary,config.secondarySize/100)
@@ -119,7 +124,7 @@ end
 
 function template:attach(service,switcher,settings,previous,shared)
     if settings.access ~= nil and settings.access ~= 0 and settings.access ~= 2 then
-        return nil, 'Dual Wheels requires Individual or Advanced direct slot input'
+        return nil, 'Wheels++ requires Individual or Advanced direct slot input'
     end
     local config=parseSettings(settings)
     if previous then
