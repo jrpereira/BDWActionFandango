@@ -107,9 +107,11 @@ local function restore(service, state)
     end
     for _,wheel in ipairs(state.order) do
         local parent=service:parent(wheel)
-        assert(service:same(parent,state.switcher) or service:same(parent,state.owner),
-            'another mod moved a wheel')
-        assert(parent:RemoveChild(wheel) ~= false, 'failed to detach wheel for restoration')
+        if parent then
+            assert(service:same(parent,state.switcher) or service:same(parent,state.owner),
+                'another mod moved a wheel')
+            assert(parent:RemoveChild(wheel) ~= false, 'failed to detach wheel for restoration')
+        end
     end
     for index,wheel in ipairs(state.order) do
         assert(service:valid(state.switcher:AddChild(wheel)), 'failed to restore wheel')

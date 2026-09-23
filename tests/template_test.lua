@@ -94,4 +94,15 @@ assert(consumable.RenderTransform.Translation.X==0 and consumable.RenderTransfor
 local rejected,message=template:attach(service,switcher,{access=1,settings={}},nil)
 assert(rejected==nil and message:find('one key per slot',1,true))
 assert(switcher:GetChildrenCount()==2 and prompt.opacity==1)
+
+local addChild=owner.AddChild
+function owner:AddChild(child)
+    if child==ability then return nil end
+    return addChild(self,child)
+end
+local failed,failure=template:attach(service,switcher,{access=0,settings={PrimaryWheel=0}},nil)
+assert(failed==nil and failure:find('cannot display secondary wheel',1,true))
+assert(switcher:GetChildrenCount()==2 and switcher:GetChildAt(0)==ability
+    and switcher:GetChildAt(1)==consumable)
+assert(prompt.opacity==1)
 print('Action Fandango template lifecycle passed')
