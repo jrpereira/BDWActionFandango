@@ -29,6 +29,8 @@ for index,row in ipairs(page.rows) do
     if row.Label=='Input Keys' then categoryInput=row.Id end
 end
 assert(categoryInput and positions[categoryInput])
+assert(page.rows[assert(positions[selector.id])].ammLevel==1,
+    'category template picker must occupy the module page header')
 for _,value in ipairs(values) do
     local definition=assert(menu.definitions['player.quickslots'][value])
     local name=te.registry.byId[definition.id].template.name
@@ -40,7 +42,7 @@ for _,value in ipairs(values) do
     local optionsRow=settingRow('AdvancedOptions')
     assert(optionsRow.PresetValues=='0|1|2'
         and optionsRow.PresetLabels=='More...|Primary|Secondary'
-        and optionsRow.ammLevel==1 and optionsRow.ammHeader==nil)
+        and optionsRow.ammLevel==2 and optionsRow.ammHeader==nil)
     local views={
         [0]={'PrimaryWheel','Arrangement'},
         [1]={'X','Y','PrimarySize','PrimaryOpacity'},
