@@ -51,6 +51,14 @@ for name,item in pairs(definitions) do
     assert(configuration.settings.AccessMode==nil)
     assert(configuration.settings.PrimaryWheel==(name=='Dual Wheels' and 0 or 1))
 end
+defaults[selector.id]=definitions['Dual Wheels'].value
+defaults[categoryInput]=2
+local advanced=menu.decode(defaults)['player.quickslots'].configuration
+assert(advanced.access==2 and advanced.categorySettings.AccessMode==2)
+local advancedPlan=Plan.build(byName['Dual Wheels'],advanced,
+    te.categories:getCategory('player.quickslots'))
+assert(#advancedPlan.actions==16 and advancedPlan.actions[1].slot==1
+    and advancedPlan.actions[9].targetSlot==1)
 local plan=Plan.build(byName['Swapping Fixed'],{
     access=1,settings={PrimaryWheel=1},
     groups={['1']={key=0,mode=-1},['2']={key=164,mode=0}},

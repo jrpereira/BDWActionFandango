@@ -118,8 +118,8 @@ local function apply(service,state,config)
 end
 
 function template:attach(service,switcher,configuration,previous,shared)
-    if configuration.access ~= nil and configuration.access ~= 0 then
-        return nil, 'Action Fandango requires one key per slot for separate skills'
+    if configuration.access ~= nil and configuration.access ~= 0 and configuration.access ~= 2 then
+        return nil, 'Dual Wheels requires Individual or Advanced direct slot input'
     end
     local config=settings(configuration)
     if previous then

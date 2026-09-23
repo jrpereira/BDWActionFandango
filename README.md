@@ -5,7 +5,8 @@ Action Fandango provides two UE4SS Templating Engine (TE) quickslots templates f
 Consumable slots. Neither creates skills.
 
 **Dual Wheels** is the first playable target. It replaces the swappable quickslots
-display with two visible wheels and requires **one key per slot**. Each action keeps
+display with two visible wheels. Choose **Individual** for one key per slot, or
+**Advanced** for those direct slot keys plus separate group keys. Each action keeps
 its own binding regardless of wheel position. Stacked and side by side layouts are
 available. You can choose the primary wheel, position and spacing, and adjust each
 wheel's size and opacity. Disabling the template restores the native widget layout.
@@ -22,18 +23,16 @@ The source module name is `ActionFandango`; the intended GitHub repository name 
 
 ## Current status
 
-Both templates pass offline lifecycle and TE registration checks. TE `0.0.18` is
-a menu-test host: its native input and visual cutover are still under development,
-and its installed menu profile has a fixed template list. Action Fandango is not
-registered in that profile or installed as a playable mod yet. In-game layout,
-input, and game lifecycle behavior have not been accepted.
+Both templates pass offline lifecycle and TE registration checks. Action Fandango
+is installed, and TE's installed menu profile registers it. TE remains a menu-test
+host; in-game layout, input, and game lifecycle behavior have not been accepted.
+Source changes after the latest installation require a coordinated update and reload.
 
-When TE supports the native cutover, it must register
-`ActionFandango/Scripts/templates/main.lua` and generate both menu choices.
+TE registers `ActionFandango/Scripts/templates/main.lua` and generates both menu choices.
 Selecting either choice in the `player.quickslots` category replaces the previous
 quickslots template because the category allows one active template. Dual Wheels
-refuses group-first input; Swapping Fixed refuses direct slot input and unsupported
-group configurations.
+refuses Grouped input; Swapping Fixed refuses Individual and Advanced input and
+unsupported group configurations.
 
 The host must invoke `attach`, `render`, and `detach` on the game thread and supply
 the live QuickslotsSwitcher through TE's `player.quickslots` service. Native input

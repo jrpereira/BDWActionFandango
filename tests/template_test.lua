@@ -98,11 +98,20 @@ assert(prompt.opacity==1)
 assert(ability.RenderTransform.Translation.X==0 and ability.RenderTransform.Translation.Y==0)
 assert(consumable.RenderTransform.Translation.X==0 and consumable.RenderTransform.Translation.Y==0)
 
+local advancedConfig={access=2,settings={PrimaryWheel=1}}
+shared=category:attach(service,switcher,advancedConfig,nil,template)
+local advanced,advancedError=template:attach(service,switcher,advancedConfig,nil,shared)
+assert(advanced,advancedError)
+assert(switcher:GetChildrenCount()==1 and switcher:GetChildAt(0)==ability)
+assert(template:detach(service,advanced,'disable'))
+assert(category:detach(service,shared,'disable'))
+assert(switcher:GetChildrenCount()==2 and switcher:GetActiveWidgetIndex()==1)
+
 local rejectedConfig={access=1,settings={}}
 shared=category:attach(service,switcher,rejectedConfig,nil,template)
 local rejected,message=template:attach(service,switcher,rejectedConfig,nil,shared)
 assert(category:detach(service,shared,'attach_failed'))
-assert(rejected==nil and message:find('one key per slot',1,true))
+assert(rejected==nil and message:find('Individual or Advanced',1,true))
 assert(switcher:GetChildrenCount()==2 and prompt.opacity==1)
 
 local addChild=owner.AddChild
