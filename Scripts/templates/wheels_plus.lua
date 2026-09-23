@@ -10,7 +10,7 @@ local template = {
         enabled = true,
         groups = {{id='Options', label='Advanced Options', level=4, heading=false}},
         fields = {
-            {id='AdvancedOptions', type='picker', group='Options', label='Advanced Options',
+            {id='AdvancedOptions', type='navigation', group='Options', label='Advanced Options',
                 values={0,1,2}, labels={'More...','Primary','Secondary'},
                 default=0, tab=true, level=2, order=1},
             {id='PrimaryWheel', type='picker', group='Options', label='Default Wheel',

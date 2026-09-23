@@ -38,11 +38,13 @@ for _,value in ipairs(values) do
     local function settingRow(field)
         return page.rows[assert(positions[assert(definition.settings[field])])]
     end
-    local advancedOptions=assert(definition.settings.AdvancedOptions)
-    local optionsRow=settingRow('AdvancedOptions')
+    local advancedOptions=assert(definition.navigation.AdvancedOptions)
+    assert(definition.settings.AdvancedOptions==nil)
+    local optionsRow=page.rows[assert(positions[advancedOptions])]
     assert(optionsRow.PresetValues=='0|1|2'
         and optionsRow.PresetLabels=='More...|Primary|Secondary'
-        and optionsRow.ammLevel==2 and optionsRow.ammHeader==nil)
+        and optionsRow.ammLevel==2 and optionsRow.ammNavigation==1
+        and optionsRow.ConfigFile==nil and optionsRow.ConfigKey==nil)
     local views={
         [0]={'PrimaryWheel','Arrangement'},
         [1]={'X','Y','PrimarySize','PrimaryOpacity'},
@@ -76,6 +78,7 @@ end
 for name,item in pairs(definitions) do
     defaults[selector.id]=item.value
     local settings=menu.decode(defaults)['player.quickslots'].settings
+    assert(settings.AdvancedOptions==nil)
     assert(settings.AccessMode==0)
     assert(settings.PrimaryWheel==1 and settings.Arrangement==0
         and settings.SecondaryX==20 and settings.SecondaryY==40)

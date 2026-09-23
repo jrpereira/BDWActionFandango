@@ -9,7 +9,7 @@ key per slot, or **Advanced** for direct slot keys plus separate group keys. In
 Advanced mode, select a group's key before using its direct slot keys. Both wheels
 remain visible, and bindings stay with their Ability or Consumable slots.
 
-**Advanced Options** switches between three views. **More...** shows Default Wheel
+**Advanced Options** switches between three menu-only views without changing a saved setting or marking the menu dirty. **More...** shows Default Wheel
 and Layout (Overlap, Stacked, or Side by side). **Primary** shows X, Y, Size, and
 Opacity for the default wheel; **Secondary** shows independent X, Y, Size, and
 Opacity for the other wheel. X and Y are offsets from each wheel's original
