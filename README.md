@@ -50,7 +50,7 @@ lua5.4 ActionFandango/tests/template_test.lua
 ## Development layout
 
 - `Scripts/action_fandango.lua`: the single TE registration entry point.
-- `Scripts/action_fandango/`: the two runtime templates and their menu settings.
+- `Scripts/templates/`: the two runtime templates and their menu settings.
 - `tests/`: focused offline regressions.
 - `tools/`: build and package scripts if a release workflow is added; tools must
   stay outside installable archives.
