@@ -9,23 +9,47 @@ local te = TE.new({
 te:registerTemplate('ActionFandango/Scripts/templates/main.lua')
 assert(te:loadTemplatesFromRegister()==2)
 local menu=te:generateMenu()
-assert(menu.providers['UE4SSTemplatingEngine.module.ActionFandango'])
+local page=assert(menu.providers['UE4SSTemplatingEngine.module.ActionFandango'])
 local selector=assert(menu.selectors['player.quickslots'])
 local values={}
 for value in pairs(selector.byValue) do values[#values+1]=value end
 assert(#values==2)
 local byName={}
+local definitions={}
 for _,entry in ipairs(te.registry.templates) do
     assert(entry.template.category=='player.quickslots' and entry.template.version=='0.1.0'
         and entry.template.single==true)
     byName[entry.template.name]=entry.template
 end
 assert(byName['Swapping Fixed'] and byName['Dual Wheels'])
+local positions, categoryInput={}
+for index,row in ipairs(page.rows) do
+    if row.Id then positions[row.Id]=index end
+    if row.Label=='Input Keys' then categoryInput=row.Id end
+end
+assert(categoryInput and positions[categoryInput])
 for _,value in ipairs(values) do
     local definition=assert(menu.definitions['player.quickslots'][value])
+    local name=te.registry.byId[definition.id].template.name
+    definitions[name]={value=value,definition=definition}
     assert(definition.access)
     assert(definition.direct['1'] and #definition.direct['1']==4)
     assert(definition.direct['2'] and #definition.direct['2']==4)
+    for _,settingId in pairs(definition.settings) do
+        assert(positions[categoryInput]<positions[settingId],
+            'category settings must precede template settings')
+    end
+end
+local defaults={}
+for _,row in ipairs(page.rows) do
+    if row.Id and row.Default~=nil then defaults[row.Id]=tonumber(row.Default) end
+end
+for name,item in pairs(definitions) do
+    defaults[selector.id]=item.value
+    local configuration=menu.decode(defaults)['player.quickslots'].configuration
+    assert(configuration.categorySettings.AccessMode==0)
+    assert(configuration.settings.AccessMode==nil)
+    assert(configuration.settings.PrimaryWheel==(name=='Dual Wheels' and 0 or 1))
 end
 local plan=Plan.build(byName['Swapping Fixed'],{
     access=1,settings={PrimaryWheel=1},
