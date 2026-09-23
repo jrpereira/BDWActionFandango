@@ -2,11 +2,11 @@ package.path = 'UE4SSTemplatingEngine/Scripts/?.lua;' .. package.path
 local TE = require('te.init')
 local Plan = require('te.player_actions.plan')
 local te = TE.new({
-    categoriesPath='UE4SSTemplatingEngine/categories.lua',
-    categoriesFolder='UE4SSTemplatingEngine/categories',
+    categoriesPath='UE4SSTemplatingEngine/Scripts/categories.lua',
+    categoriesFolder='UE4SSTemplatingEngine/Scripts/categories',
     listFiles=function() return {} end,
 })
-te:registerTemplate('ActionFandango/templates/action_fandango.lua')
+te:registerTemplate('ActionFandango/Scripts/action_fandango.lua')
 assert(te:loadTemplatesFromRegister()==2)
 local menu=te:generateMenu()
 assert(menu.providers['UE4SSTemplatingEngine.module.ActionFandango'])

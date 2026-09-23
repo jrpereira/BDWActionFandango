@@ -3,6 +3,7 @@ local Widget = require('te.widget')
 local template = {
     name = 'Dual Wheels',
     description = 'Two always-visible action wheels with a separate input for every existing slot.',
+    detachSecondaryWheel = true,
     settings = {
         target = 'module',
         enabled = true,
@@ -56,34 +57,18 @@ local function settings(configuration)
     }
 end
 
-local function owningHud(service, switcher)
-    local node = switcher
-    for _=1,20 do
-        if not service:valid(node) then return nil end
-        local name = service:identity(node)
-        if name:find('WBP_GameHUD_C',1,true) then return node end
-        node = service:parent(node)
-    end
-end
-
-local function snapshot(service, switcher)
+local function snapshot(service, switcher, shared)
     assert(service:valid(switcher), 'quickslots switcher unavailable')
-    assert(switcher:GetChildrenCount() == 2, 'quickslots switcher must have two native wheels')
-    local hud = assert(owningHud(service,switcher), 'game HUD unavailable')
-    local ability = assert(Widget.property(hud,'WBP_AA_Quickslots'), 'ability wheel unavailable')
-    local consumable = assert(Widget.property(hud,'WBP_HUD_Quickslots'), 'consumable wheel unavailable')
+    assert(type(shared)=='table' and shared.moved and service:same(shared.switcher,switcher),
+        'quickslots category must separate the native wheels first')
+    local hud = assert(shared.hud, 'game HUD unavailable')
+    local ability,consumable = shared.ability,shared.consumable
     assert(service:valid(ability) and service:valid(consumable), 'native wheels unavailable')
-    local first, second = switcher:GetChildAt(0), switcher:GetChildAt(1)
-    assert((service:same(first,ability) and service:same(second,consumable))
-        or (service:same(first,consumable) and service:same(second,ability)),
-        'native wheel order changed')
-    local owner = assert(service:parent(switcher), 'quickslots switcher parent unavailable')
     local prompt = Widget.property(hud,'WBP_HUD_Quickslots_ChangePrompt')
     if not service:valid(prompt) then prompt = nil end
     return {
-        switcher=switcher, owner=owner, ability=ability, consumable=consumable,
-        order={first,second}, slots={Widget.snapshotSlot(first),Widget.snapshotSlot(second)},
-        activeIndex=switcher:GetActiveWidgetIndex(),
+        switcher=switcher, ability=ability, consumable=consumable,
+        primary=shared.primary, secondary=shared.secondary,
         switcherTranslation=Widget.translation(switcher),
         abilityTranslation=Widget.translation(ability),
         consumableTranslation=Widget.translation(consumable),
@@ -95,25 +80,8 @@ end
 
 local function restore(service, state)
     if not service:valid(state.switcher) then return true end
-    assert(service:valid(state.owner) and service:valid(state.ability)
-        and service:valid(state.consumable), 'wheel hierarchy changed before restoration')
-    for index=0,state.switcher:GetChildrenCount()-1 do
-        local child=state.switcher:GetChildAt(index)
-        assert(service:same(child,state.ability) or service:same(child,state.consumable),
-            'another mod changed switcher children')
-    end
-    for _,wheel in ipairs(state.order) do
-        local parent=service:parent(wheel)
-        if parent then
-            assert(service:same(parent,state.switcher) or service:same(parent,state.owner),
-                'another mod moved a wheel')
-            assert(parent:RemoveChild(wheel) ~= false, 'failed to detach wheel for restoration')
-        end
-    end
-    for index,wheel in ipairs(state.order) do
-        assert(service:valid(state.switcher:AddChild(wheel)), 'failed to restore wheel')
-        Widget.restoreSlot(wheel,state.slots[index])
-    end
+    assert(service:valid(state.ability) and service:valid(state.consumable),
+        'native wheels unavailable for visual restoration')
     Widget.setTranslation(state.switcher,state.switcherTranslation.X,state.switcherTranslation.Y)
     Widget.setTranslation(state.ability,state.abilityTranslation.X,state.abilityTranslation.Y)
     Widget.setTranslation(state.consumable,state.consumableTranslation.X,state.consumableTranslation.Y)
@@ -124,18 +92,17 @@ local function restore(service, state)
     if state.prompt and service:valid(state.prompt) then
         Widget.setOpacity(state.prompt,state.promptOpacity)
     end
-    state.switcher:SetActiveWidgetIndex(state.activeIndex)
     return true
 end
 
 local function apply(service,state,config)
     local primary=config.primaryWheel==1 and state.ability or state.consumable
     local secondary=config.primaryWheel==1 and state.consumable or state.ability
+    assert(service:same(primary,state.primary) and service:same(secondary,state.secondary),
+        'quickslots category selected different wheel order')
     assert(service:same(service:parent(primary),state.switcher)
-        and service:same(service:parent(secondary),state.switcher),
-        'native quickslots wheels are no longer switcher children')
-    assert(state.switcher:RemoveChild(secondary) ~= false, 'cannot separate secondary wheel')
-    assert(service:valid(state.owner:AddChild(secondary)), 'cannot display secondary wheel')
+        and not service:same(service:parent(secondary),state.switcher),
+        'quickslots category did not separate the secondary wheel')
     state.switcher:SetActiveWidget(primary)
     Widget.setTranslation(primary,0,0)
     Widget.setTranslation(state.switcher,config.x,config.y)
@@ -150,7 +117,7 @@ local function apply(service,state,config)
     state.primary, state.secondary = primary,secondary
 end
 
-function template:attach(service,switcher,configuration,previous)
+function template:attach(service,switcher,configuration,previous,shared)
     if configuration.access ~= nil and configuration.access ~= 0 then
         return nil, 'Action Fandango requires one key per slot for separate skills'
     end
@@ -159,7 +126,7 @@ function template:attach(service,switcher,configuration,previous)
         local ok,err=pcall(restore,service,previous)
         if not ok then return nil,err end
     end
-    local ok,state=pcall(snapshot,service,switcher)
+    local ok,state=pcall(snapshot,service,switcher,shared)
     if not ok then return nil,state end
     local applied,err=pcall(apply,service,state,config)
     if not applied then

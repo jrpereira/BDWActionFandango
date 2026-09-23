@@ -1,6 +1,7 @@
 local root = (arg[0] or ''):match('^(.*)/tests/template_test%.lua$') or '.'
 package.path = root .. '/../UE4SSTemplatingEngine/Scripts/?.lua;' .. package.path
-local header, choices = dofile(root .. '/templates/action_fandango.lua')
+local header, choices = dofile(root .. '/Scripts/action_fandango.lua')
+local category = dofile(root .. '/../UE4SSTemplatingEngine/Scripts/categories/player_quickslots.lua')
 assert(header.category=='player.quickslots' and #choices==2)
 local fixed,template=choices[1],choices[2]
 
@@ -72,20 +73,24 @@ hud.WBP_AA_Quickslots=ability
 hud.WBP_HUD_Quickslots=consumable
 hud.WBP_HUD_Quickslots_ChangePrompt=prompt
 
-local handle,err=template:attach(service,switcher,{access=0,settings={Arrangement=0,Gap=360}},nil)
+local firstConfig={access=0,settings={Arrangement=0,Gap=360}}
+local shared=category:attach(service,switcher,firstConfig,nil,template)
+local handle,err=template:attach(service,switcher,firstConfig,nil,shared)
 assert(handle,err)
 assert(switcher:GetChildrenCount()==1 and switcher:GetChildAt(0)==consumable)
 assert(ability:GetParent()==owner)
 assert(ability.RenderTransform.Translation.X==20 and ability.RenderTransform.Translation.Y==-320)
 assert(prompt.opacity==0)
 
-local second,secondError=template:attach(service,switcher,{access=0,
-    settings={Arrangement=1,PrimaryWheel=1,X=-40,Y=60,Gap=300}},handle)
+local secondConfig={access=0,settings={Arrangement=1,PrimaryWheel=1,X=-40,Y=60,Gap=300}}
+shared=category:attach(service,switcher,secondConfig,shared,template)
+local second,secondError=template:attach(service,switcher,secondConfig,handle,shared)
 assert(second,secondError)
 assert(switcher:GetChildAt(0)==ability and consumable:GetParent()==owner)
 assert(consumable.RenderTransform.Translation.X==260 and consumable.RenderTransform.Translation.Y==60)
 assert(template:render(service,second,switcher,'GroupSelected')=='applied')
 assert(template:detach(service,second,'disable'))
+assert(category:detach(service,shared,'disable'))
 assert(switcher:GetChildrenCount()==2)
 assert(switcher:GetChildAt(0)==ability and switcher:GetChildAt(1)==consumable)
 assert(switcher:GetActiveWidgetIndex()==1)
@@ -93,7 +98,10 @@ assert(prompt.opacity==1)
 assert(ability.RenderTransform.Translation.X==0 and ability.RenderTransform.Translation.Y==0)
 assert(consumable.RenderTransform.Translation.X==0 and consumable.RenderTransform.Translation.Y==0)
 
-local rejected,message=template:attach(service,switcher,{access=1,settings={}},nil)
+local rejectedConfig={access=1,settings={}}
+shared=category:attach(service,switcher,rejectedConfig,nil,template)
+local rejected,message=template:attach(service,switcher,rejectedConfig,nil,shared)
+assert(category:detach(service,shared,'attach_failed'))
 assert(rejected==nil and message:find('one key per slot',1,true))
 assert(switcher:GetChildrenCount()==2 and prompt.opacity==1)
 
@@ -102,8 +110,10 @@ function owner:AddChild(child)
     if child==ability then return nil end
     return addChild(self,child)
 end
-local failed,failure=template:attach(service,switcher,{access=0,settings={PrimaryWheel=0}},nil)
-assert(failed==nil and failure:find('cannot display secondary wheel',1,true))
+local failed,failure=pcall(function()
+    return category:attach(service,switcher,{access=0,settings={PrimaryWheel=0}},nil,template)
+end)
+assert(not failed and failure:find('could not attach secondary wheel to owner',1,true))
 assert(switcher:GetChildrenCount()==2 and switcher:GetChildAt(0)==ability
     and switcher:GetChildAt(1)==consumable)
 assert(prompt.opacity==1)
@@ -123,9 +133,8 @@ function switcher:AddChild(child)
     if child==ability then return nil end
     return addChild(self,child)
 end
-local unrestored,restoreFailure=template:attach(service,switcher,
-    {access=0,settings={PrimaryWheel=0}},nil)
-assert(unrestored==nil and restoreFailure:find('cannot display secondary wheel',1,true)
-    and restoreFailure:find('restoration failed:',1,true)
-    and restoreFailure:find('failed to restore wheel',1,true), restoreFailure)
+local unrestored,restoreFailure=pcall(function()
+    return category:attach(service,switcher,{access=0,settings={PrimaryWheel=0}},nil,template)
+end)
+assert(not unrestored and restoreFailure:find('could not attach secondary wheel to owner',1,true),restoreFailure)
 print('Action Fandango template lifecycle passed')

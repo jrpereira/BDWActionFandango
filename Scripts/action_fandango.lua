@@ -1,5 +1,5 @@
 local source = debug.getinfo(1,'S').source:gsub('^@','')
-local root = assert(source:match('^(.*)[/\\]templates[/\\][^/\\]+$'),
+local root = assert(source:match('^(.*)[/\\]Scripts[/\\][^/\\]+$'),
     'cannot locate Action Fandango module')
 local function load(name)
     local path = root .. '/Scripts/action_fandango/' .. name .. '.lua'
