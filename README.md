@@ -6,8 +6,10 @@ Consumable slots. Neither creates skills.
 
 **Dual Wheels** is the first playable target. It replaces the swappable quickslots
 display with two visible wheels. Choose **Individual** for one key per slot, or
-**Advanced** for those direct slot keys plus separate group keys. Each action keeps
-its own binding regardless of wheel position. Stacked and side by side layouts are
+**Advanced** for direct slot keys plus separate group keys. In Advanced mode, select
+the Ability or Consumable group with its group key before using that group's direct
+slot keys. The group selection does not hide either wheel. Each action keeps its own
+binding regardless of wheel position. Stacked and side by side layouts are
 available. You can choose the primary wheel, position and spacing, and adjust each
 wheel's size and opacity. Disabling the template restores the native widget layout.
 

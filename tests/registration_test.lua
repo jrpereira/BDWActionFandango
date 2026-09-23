@@ -1,6 +1,7 @@
 package.path = 'UE4SSTemplatingEngine/Scripts/?.lua;' .. package.path
 local TE = require('te.init')
 local Plan = require('te.player_actions.plan')
+local Delivery = require('te.player_actions.delivery')
 local te = TE.new({
     categoriesPath='UE4SSTemplatingEngine/Scripts/categories.lua',
     categoriesFolder='UE4SSTemplatingEngine/Scripts/categories',
@@ -59,6 +60,38 @@ local advancedPlan=Plan.build(byName['Dual Wheels'],advanced,
     te.categories:getCategory('player.quickslots'))
 assert(#advancedPlan.actions==16 and advancedPlan.actions[1].slot==1
     and advancedPlan.actions[9].targetSlot==1)
+local activated, nativeSelections = {}, 0
+local service = {
+    activateQuickslot=function(_,kind,slot)
+        activated[#activated+1]={kind,slot}
+        return true
+    end,
+    selectQuickslotGroup=function()
+        nativeSelections=nativeSelections+1
+        return true
+    end,
+}
+local state={configuration=advanced,selectedGroup=1,defaultGroup=1}
+for _,action in ipairs(advancedPlan.actions) do
+    if action.slot then
+        state.selectedGroup=action.groupIndex==1 and 2 or 1
+        assert(Delivery.deliver(byName['Dual Wheels'],state,action,'Triggered',service))
+        assert(#activated==0,'inactive Advanced group must not activate a slot')
+        local groupKey
+        for _,candidate in ipairs(advancedPlan.actions) do
+            if candidate.targetSlot==action.slot and candidate.groupIndex==action.groupIndex then
+                groupKey=candidate
+                break
+            end
+        end
+        assert(groupKey and Delivery.deliver(byName['Dual Wheels'],state,groupKey,'Triggered',service))
+        assert(state.selectedGroup==action.groupIndex and nativeSelections==0)
+        assert(Delivery.deliver(byName['Dual Wheels'],state,action,'Triggered',service))
+        assert(#activated==1 and activated[1][1]==action.type
+            and activated[1][2]==action.slot)
+        activated={}
+    end
+end
 local plan=Plan.build(byName['Swapping Fixed'],{
     access=1,settings={PrimaryWheel=1},
     groups={['1']={key=0,mode=-1},['2']={key=164,mode=0}},
