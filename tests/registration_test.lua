@@ -33,6 +33,26 @@ for _,value in ipairs(values) do
     local definition=assert(menu.definitions['player.quickslots'][value])
     local name=te.registry.byId[definition.id].template.name
     definitions[name]={value=value,definition=definition}
+    local function settingRow(field)
+        return page.rows[assert(positions[assert(definition.settings[field])])]
+    end
+    local advancedOptions=assert(definition.settings.AdvancedOptions)
+    local optionsRow=settingRow('AdvancedOptions')
+    assert(optionsRow.PresetValues=='0|1|2'
+        and optionsRow.PresetLabels=='More...|Primary|Secondary')
+    local views={
+        [0]={'PrimaryWheel','Arrangement'},
+        [1]={'X','Y','PrimarySize','PrimaryOpacity'},
+        [2]={'SecondaryX','SecondaryY','SecondarySize','SecondaryOpacity'},
+    }
+    for view,fields in pairs(views) do
+        for _,field in ipairs(fields) do
+            local row=settingRow(field)
+            assert(row.VisibleWhen==advancedOptions and row.VisibleValues==tostring(view),
+                field .. ' must appear only in Advanced Options view ' .. view)
+        end
+    end
+    assert(not definition.settings.Gap)
     assert(page.rows[assert(positions[definition.settings.PrimaryWheel])].Label=='Default Wheel',
         name .. ' must display Default Wheel in the module menu')
     local layout=page.rows[assert(positions[definition.settings.Arrangement])]
@@ -54,7 +74,8 @@ for name,item in pairs(definitions) do
     defaults[selector.id]=item.value
     local settings=menu.decode(defaults)['player.quickslots'].settings
     assert(settings.AccessMode==0)
-    assert(settings.PrimaryWheel==1 and settings.Arrangement==0)
+    assert(settings.PrimaryWheel==1 and settings.Arrangement==0
+        and settings.SecondaryX==20 and settings.SecondaryY==40)
 end
 defaults[selector.id]=definitions['Wheels++'].value
 defaults[categoryInput]=2

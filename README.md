@@ -9,11 +9,12 @@ key per slot, or **Advanced** for direct slot keys plus separate group keys. In
 Advanced mode, select a group's key before using its direct slot keys. Both wheels
 remain visible, and bindings stay with their Ability or Consumable slots.
 
-The **Layout** control offers Overlap, Stacked, and Side by side. Choose the default
-wheel, position, spacing, size, and opacity in the menu. Spacing applies to Stacked
-and Side by side. Overlap places the secondary wheel at the default wheel's
-position. Disabling the template restores the original native wheel hierarchy and
-visual properties.
+**Advanced Options** switches between three views. **More...** shows Default Wheel
+and Layout (Overlap, Stacked, or Side by side). **Primary** shows X, Y, Size, and
+Opacity for the default wheel; **Secondary** shows independent X, Y, Size, and
+Opacity for the other wheel. X and Y are offsets from each wheel's original
+position after the selected layout places it. Disabling the template restores the
+original native wheel hierarchy and visual properties.
 
 The source module name is `ActionFandango`; the intended GitHub repository name is
 `BDWActionFandango`.

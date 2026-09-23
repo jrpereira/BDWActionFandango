@@ -1,4 +1,5 @@
 local Widget = require('te.widget')
+local layoutDistance = 360
 
 local template = {
     name = 'Wheels++',
@@ -7,37 +8,49 @@ local template = {
     settings = {
         target = 'module',
         enabled = true,
-        groups = {
-            {id='Layout', label='Layout', level=4},
-            {id='Primary', label='Default Wheel', level=4},
-            {id='Secondary', label='Secondary Wheel', level=4},
-        },
+        groups = {{id='Options', label='Advanced Options', level=4, heading=false}},
         fields = {
-            {id='Arrangement', type='picker', group='Layout', label='Layout',
-                description='Choose overlapping, stacked, or side by side wheels.',
-                values={2,0,1}, labels={'Overlap','Stacked','Side by side'},
+            {id='AdvancedOptions', type='picker', group='Options', label='Advanced Options',
+                values={0,1,2}, labels={'More...','Primary','Secondary'},
                 default=0, tab=true, level=4, order=1},
-            {id='PrimaryWheel', type='picker', group='Layout', label='Default Wheel',
+            {id='PrimaryWheel', type='picker', group='Options', label='Default Wheel',
                 description='Choose which wheel occupies the default position.',
                 values={1,0}, labels={'Abilities','Consumables'},
-                default=1, tab=true, level=4, order=2},
-            {id='X', type='integer', group='Layout', label='X',
-                description='Default wheel horizontal offset.',
-                min=-1000, max=1000, step=10, default=20, order=3},
-            {id='Y', type='integer', group='Layout', label='Y',
-                description='Default wheel vertical offset.',
-                min=-1000, max=1000, step=10, default=40, order=4},
-            {id='Gap', type='integer', group='Layout', label='Spacing',
-                description='Distance between wheels in stacked and side by side layouts.',
-                min=100, max=800, step=10, default=360, order=5},
-            {id='PrimarySize', type='integer', group='Primary', label='Size',
-                min=25, max=200, step=5, suffix='%', default=100, order=1},
-            {id='PrimaryOpacity', type='integer', group='Primary', label='Opacity',
-                min=0, max=100, step=5, suffix='%', default=100, order=2},
-            {id='SecondarySize', type='integer', group='Secondary', label='Size',
-                min=25, max=200, step=5, suffix='%', default=75, order=1},
-            {id='SecondaryOpacity', type='integer', group='Secondary', label='Opacity',
-                min=0, max=100, step=5, suffix='%', default=85, order=2},
+                default=1, tab=true, level=4, order=2,
+                visibleWhen='AdvancedOptions', visibleValues={0}},
+            {id='Arrangement', type='picker', group='Options', label='Layout',
+                description='Choose overlapping, stacked, or side by side wheels.',
+                values={2,0,1}, labels={'Overlap','Stacked','Side by side'},
+                default=0, tab=true, level=4, order=3,
+                visibleWhen='AdvancedOptions', visibleValues={0}},
+            {id='X', type='integer', group='Options', label='X',
+                description='Default wheel horizontal offset from its original position.',
+                min=-1000, max=1000, step=10, default=20, order=4,
+                visibleWhen='AdvancedOptions', visibleValues={1}},
+            {id='Y', type='integer', group='Options', label='Y',
+                description='Default wheel vertical offset from its original position.',
+                min=-1000, max=1000, step=10, default=40, order=5,
+                visibleWhen='AdvancedOptions', visibleValues={1}},
+            {id='PrimarySize', type='integer', group='Options', label='Size',
+                min=25, max=200, step=5, suffix='%', default=100, order=6,
+                visibleWhen='AdvancedOptions', visibleValues={1}},
+            {id='PrimaryOpacity', type='integer', group='Options', label='Opacity',
+                min=0, max=100, step=5, suffix='%', default=100, order=7,
+                visibleWhen='AdvancedOptions', visibleValues={1}},
+            {id='SecondaryX', type='integer', group='Options', label='X',
+                description='Secondary wheel horizontal offset from its layout position.',
+                min=-1000, max=1000, step=10, default=20, order=8,
+                visibleWhen='AdvancedOptions', visibleValues={2}},
+            {id='SecondaryY', type='integer', group='Options', label='Y',
+                description='Secondary wheel vertical offset from its layout position.',
+                min=-1000, max=1000, step=10, default=40, order=9,
+                visibleWhen='AdvancedOptions', visibleValues={2}},
+            {id='SecondarySize', type='integer', group='Options', label='Size',
+                min=25, max=200, step=5, suffix='%', default=75, order=10,
+                visibleWhen='AdvancedOptions', visibleValues={2}},
+            {id='SecondaryOpacity', type='integer', group='Options', label='Opacity',
+                min=0, max=100, step=5, suffix='%', default=85, order=11,
+                visibleWhen='AdvancedOptions', visibleValues={2}},
         },
     },
 }
@@ -53,7 +66,9 @@ local function parseSettings(source)
     end
     return {
         arrangement=integer('Arrangement',0,0,2), primaryWheel=integer('PrimaryWheel',0,0,1),
-        x=integer('X',20,-1000,1000), y=integer('Y',40,-1000,1000), gap=integer('Gap',360,100,800),
+        x=integer('X',20,-1000,1000), y=integer('Y',40,-1000,1000),
+        secondaryX=integer('SecondaryX',20,-1000,1000),
+        secondaryY=integer('SecondaryY',40,-1000,1000),
         primarySize=integer('PrimarySize',100,25,200),
         primaryOpacity=integer('PrimaryOpacity',100,0,100),
         secondarySize=integer('SecondarySize',75,25,200),
@@ -76,6 +91,8 @@ local function snapshot(service, switcher, shared)
         switcherTranslation=Widget.translation(switcher),
         abilityTranslation=Widget.translation(ability),
         consumableTranslation=Widget.translation(consumable),
+        primaryTranslation=Widget.translation(shared.primary),
+        secondaryTranslation=Widget.translation(shared.secondary),
         abilityScale=Widget.scale(ability), consumableScale=Widget.scale(consumable),
         abilityOpacity=Widget.opacity(ability), consumableOpacity=Widget.opacity(consumable),
         prompt=prompt, promptOpacity=prompt and Widget.opacity(prompt) or nil,
@@ -108,11 +125,14 @@ local function apply(service,state,config)
         and not service:same(service:parent(secondary),state.switcher),
         'quickslots category did not separate the secondary wheel')
     state.switcher:SetActiveWidget(primary)
-    Widget.setTranslation(primary,0,0)
-    Widget.setTranslation(state.switcher,config.x,config.y)
-    local sx,sy=config.x,config.y-config.gap
-    if config.arrangement==1 then sx,sy=config.x+config.gap,config.y end
-    if config.arrangement==2 then sx,sy=config.x,config.y end
+    Widget.setTranslation(primary,state.primaryTranslation.X,state.primaryTranslation.Y)
+    Widget.setTranslation(state.switcher,
+        state.switcherTranslation.X+config.x,state.switcherTranslation.Y+config.y)
+    local layoutX,layoutY=0,0
+    if config.arrangement==0 then layoutY=-layoutDistance end
+    if config.arrangement==1 then layoutX=layoutDistance end
+    local sx=state.switcherTranslation.X+state.secondaryTranslation.X+layoutX+config.secondaryX
+    local sy=state.switcherTranslation.Y+state.secondaryTranslation.Y+layoutY+config.secondaryY
     Widget.setTranslation(secondary,sx,sy)
     Widget.setScale(primary,config.primarySize/100)
     Widget.setScale(secondary,config.secondarySize/100)

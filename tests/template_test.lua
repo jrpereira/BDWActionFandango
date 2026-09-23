@@ -73,7 +73,7 @@ hud.WBP_AA_Quickslots=ability
 hud.WBP_HUD_Quickslots=consumable
 hud.WBP_HUD_Quickslots_ChangePrompt=prompt
 
-local firstConfig={access=0,Arrangement=0,Gap=360}
+local firstConfig={access=0,Arrangement=0}
 local shared=category:attach(service,switcher,firstConfig,nil,template)
 local handle,err=template:attach(service,switcher,firstConfig,nil,shared)
 assert(handle,err)
@@ -82,11 +82,13 @@ assert(ability:GetParent()==owner)
 assert(ability.RenderTransform.Translation.X==20 and ability.RenderTransform.Translation.Y==-320)
 assert(prompt.opacity==0)
 
-local secondConfig={access=0,Arrangement=1,PrimaryWheel=1,X=-40,Y=60,Gap=300}
+local secondConfig={access=0,Arrangement=1,PrimaryWheel=1,X=-40,Y=60,
+    SecondaryX=-100,SecondaryY=60}
 shared=category:attach(service,switcher,secondConfig,shared,template)
 local second,secondError=template:attach(service,switcher,secondConfig,handle,shared)
 assert(second,secondError)
 assert(switcher:GetChildAt(0)==ability and consumable:GetParent()==owner)
+assert(switcher.RenderTransform.Translation.X==-40 and switcher.RenderTransform.Translation.Y==60)
 assert(consumable.RenderTransform.Translation.X==260 and consumable.RenderTransform.Translation.Y==60)
 assert(template:render(service,second,switcher,'GroupSelected')=='applied')
 assert(template:detach(service,second,'disable'))
@@ -107,15 +109,39 @@ assert(template:detach(service,advanced,'disable'))
 assert(category:detach(service,shared,'disable'))
 assert(switcher:GetChildrenCount()==2 and switcher:GetActiveWidgetIndex()==1)
 
-local overlapConfig={access=0,Arrangement=2,PrimaryWheel=1,X=-40,Y=60,Gap=300}
+local overlapConfig={access=0,Arrangement=2,PrimaryWheel=1,X=-40,Y=60,
+    SecondaryX=120,SecondaryY=-30}
 shared=category:attach(service,switcher,overlapConfig,nil,template)
 local overlap,overlapError=template:attach(service,switcher,overlapConfig,nil,shared)
 assert(overlap,overlapError)
-assert(consumable.RenderTransform.Translation.X==-40
-    and consumable.RenderTransform.Translation.Y==60)
+assert(consumable.RenderTransform.Translation.X==120
+    and consumable.RenderTransform.Translation.Y==-30)
 assert(template:detach(service,overlap,'disable'))
 assert(category:detach(service,shared,'disable'))
 assert(switcher:GetChildrenCount()==2 and switcher:GetActiveWidgetIndex()==1)
+
+switcher:SetRenderTranslation({X=7,Y=11})
+ability:SetRenderTranslation({X=2,Y=5})
+consumable:SetRenderTranslation({X=-3,Y=4})
+local nativeConfig={access=0,Arrangement=0,PrimaryWheel=1,X=13,Y=17,
+    SecondaryX=-5,SecondaryY=9}
+shared=category:attach(service,switcher,nativeConfig,nil,template)
+local native,nativeError=template:attach(service,switcher,nativeConfig,nil,shared)
+assert(native,nativeError)
+assert(switcher.RenderTransform.Translation.X==20
+    and switcher.RenderTransform.Translation.Y==28)
+assert(ability.RenderTransform.Translation.X==2 and ability.RenderTransform.Translation.Y==5)
+assert(consumable.RenderTransform.Translation.X==-1
+    and consumable.RenderTransform.Translation.Y==-336)
+assert(template:detach(service,native,'disable'))
+assert(category:detach(service,shared,'disable'))
+assert(switcher.RenderTransform.Translation.X==7 and switcher.RenderTransform.Translation.Y==11)
+assert(ability.RenderTransform.Translation.X==2 and ability.RenderTransform.Translation.Y==5)
+assert(consumable.RenderTransform.Translation.X==-3
+    and consumable.RenderTransform.Translation.Y==4)
+switcher:SetRenderTranslation({X=0,Y=0})
+ability:SetRenderTranslation({X=0,Y=0})
+consumable:SetRenderTranslation({X=0,Y=0})
 
 local rejectedConfig={access=1,}
 shared=category:attach(service,switcher,rejectedConfig,nil,template)
