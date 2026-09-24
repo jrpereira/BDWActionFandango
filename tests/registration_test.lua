@@ -1,9 +1,9 @@
 package.path = 'ModCoreTemplates/Scripts/?.lua;' .. package.path
 local te=require('ket.init').new({categoriesFolder='ModCoreTemplates/Scripts/categories',listFiles=function() return {} end})
-te:registerTemplate('ActionFangdango/Scripts/templates/main.lua')
+te:registerTemplate('Fangdango/Scripts/templates/main.lua')
 assert(te:loadTemplatesFromRegister()==1)
 local menu=te:generateMenu({externalQuickslotControls=true})
-local page=assert(menu.providers['ModCoreTemplates.module.ActionFangdango'])
+local page=assert(menu.providers['ModCoreTemplates.module.Fangdango'])
 local selector=menu.selectors['player.quickslots']
 local value=assert(next(selector.byValue))
 assert(next(selector.byValue,value)==nil)

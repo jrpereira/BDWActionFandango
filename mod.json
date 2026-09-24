@@ -1,7 +1,7 @@
 {
   "manifest_version": 1,
-  "id": "ActionFangdango",
-  "name": "Action Fangdango",
+  "id": "Fangdango",
+  "name": "Fangdango",
   "description": "Arrange your ability and consumable wheels to suit your playstyle. Show both at once or switch between them, with adjustable position, size, and opacity. A little choreography for your combat HUD.",
   "version_source": "Scripts/templates/main.lua",
   "dependencies": [
@@ -27,6 +27,6 @@
     }
   ],
   "links": {
-    "source": "https://github.com/jrpereira/BDWActionFangdango"
+    "source": "https://github.com/jrpereira/BDWFangdango"
   }
 }

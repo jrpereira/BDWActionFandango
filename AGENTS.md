@@ -1,4 +1,4 @@
-# Action Fangdango development
+# Fangdango development
 
 In the Gaming workspace, read the shared `RULES.md` and relevant procedures before
 working on this module. Keep runtime source in `Scripts/`, tests
