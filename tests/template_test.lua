@@ -1,4 +1,4 @@
-local root = 'ActionFandango'
+local root = 'ActionFangdango'
 package.path = root .. '/../ModCoreTemplates/Scripts/?.lua;' .. package.path
 local header, choices = dofile(root .. '/Scripts/templates/main.lua')
 assert(header.category=='player.quickslots' and #choices==1)
@@ -99,12 +99,12 @@ local te=require('ket.init').new({
     categoriesFolder='ModCoreTemplates/Scripts/categories',
     listFiles=function() return {} end,
 })
-te:registerTemplate('ActionFandango/Scripts/templates/main.lua')
+te:registerTemplate('ActionFangdango/Scripts/templates/main.lua')
 assert(te:loadTemplatesFromRegister()==1)
 local menu=te:generateMenu({externalQuickslotControls=true})
 local selector=menu.selectors['player.quickslots']
 local value=assert(next(selector.byValue))
-local page=menu.providers['ModCoreTemplates.module.ActionFandango']
+local page=menu.providers['ModCoreTemplates.module.ActionFangdango']
 local values={[selector.id]=value}
 for _,row in ipairs(page.rows) do
     if row.Id and row.Default~=nil then values[row.Id]=tonumber(row.Default) or row.Default end
