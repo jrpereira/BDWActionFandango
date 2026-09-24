@@ -1,49 +1,65 @@
 # Action Fandango
 
-Action Fandango provides one KEngineTemplates (KET) quickslots template for
-*The Blood of Dawnwalker*. It uses the four existing Ability and four existing
-Consumable slots and creates no new skills.
+Arrange your ability and consumable wheels to suit your playstyle. Show both at once or switch between them, with adjustable position, size, and opacity. A little choreography for your combat HUD.
 
-**Wheels++** displays both native quickslot wheels. Choose **Individual** for one
-key per slot, or **Advanced** for direct slot keys plus separate group keys. In
-Advanced mode, select a group's key before using its direct slot keys. Both wheels
-remain visible, and bindings stay with their Ability or Consumable slots.
+## What you can change
 
-**Advanced Options** switches between three menu-only views without changing a saved setting or marking the menu dirty. **More...** shows Default Wheel
-and Layout (Overlap, Stacked, or Side by side). **Primary** shows X, Y, Size, and
-Opacity for the default wheel; **Secondary** shows independent X, Y, Size, and
-Opacity for the other wheel. X and Y are offsets from each wheel's original
-position after the selected layout places it. Disabling the template restores the
-original native wheel hierarchy and visual properties.
+| Setting | What it does |
+|---|---|
+| **Swap** | Shows one wheel at a time, with both using the same position, size, and opacity. This is the default. |
+| **Distant** | Shows both wheels, with separate appearance settings for each. |
+| **X / Y** | Moves the wheel horizontally or vertically from its usual position. |
+| **Size** | Changes wheel size. 100% is the normal size. |
+| **Opacity** | Changes visibility, from invisible at 0% to fully visible at 100%. |
 
-The source module name is `ActionFandango`; the intended GitHub repository name is
-`BDWActionFandango`.
+In Distant mode, **Wheel 1** contains abilities and **Wheel 2** contains
+consumables. Each style remembers its settings when you switch to the other.
+The mod rearranges the existing wheels; it does not add skills or change their keys.
 
-## Current status
+## Requirements
 
-Wheels++ passes offline template lifecycle and KET registration checks. KET owns
-native input and selection; Action Fandango owns the wheel layout. In-game layout,
-input, and lifecycle behavior still need live acceptance.
+- **UE4SS for your Dawnwalker game version.** See the loader links in the
+  [Dawnwalker Mod Menu requirements](https://www.nexusmods.com/thebloodofdawnwalker/mods/271).
+- [Dawnwalker Mod Menu](https://www.nexusmods.com/thebloodofdawnwalker/mods/271).
+- [ModCoreSettings](https://www.nexusmods.com/thebloodofdawnwalker/mods/590).
+- [ModCoreTemplates](https://www.nexusmods.com/thebloodofdawnwalker/mods/641),
+  with support for Action Fandango's **Wheels** option.
 
-The new menu registers only Wheels++. An existing selection of the removed
-Swapping Fixed choice becomes None when TE refreshes the menu; select Wheels++
-after updating. Existing Arrangement values retain their meanings: 0 is Stacked,
-1 is Side by side, and 2 is Overlap.
+ModCoreControls is optional for changing input layouts; it is not required just
+to choose a wheel style. If you use it, follow its own dependency requirements.
 
-Run offline checks from the Gaming workspace:
+## Installation
 
-```sh
-lua5.4 ActionFandango/tests/registration_test.lua
-lua5.4 ActionFandango/tests/template_test.lua
-```
+1. Close the game completely. Extract the mod download so its `ActionFandango`
+   folder sits directly inside the game's `ue4ss/Mods` folder.
+2. Download any missing dependencies above and install them with the game closed.
+   Use each download's instructions: some archives already include the full
+   game-folder path, and UE4SS itself does not install inside `Mods`.
+3. Ensure the mods are enabled in your UE4SS setup or mod manager, then restart
+   the game. Avoid an extra nested `ActionFandango/ActionFandango` folder.
 
-## Development layout
+## First use
 
-- `Scripts/templates/main.lua`: the single KET registration entry point.
-- `Scripts/templates/`: the active Wheels++ template and its menu settings.
-- `tests/`: focused offline regressions.
-- `tools/`: build and package scripts if a release workflow is added; tools must
-  stay outside installable archives.
-- `docs/`: public usage and integration guidance if the interface expands.
+Open **Mod Settings** and find **Action Fandango**. Select **Wheels**, choose
+**Swap** or **Distant**, then adjust the visible settings and choose **Apply**.
+Start with Swap at 100% size and opacity, then change one setting at a time.
 
-Personal configuration, logs, builds, and installation backups stay outside Git.
+Updating from **Wheels++**? Select **Wheels** again; the older option has been
+removed. This Wheels update is awaiting in-game verification.
+
+## If something looks wrong
+
+- **No Action Fandango page or Wheels option:** check that the required mods are
+  enabled and that your ModCoreTemplates version supports Wheels, then restart.
+- **A wheel disappeared:** restore its opacity and size to 100%, and X/Y to 0.
+  In Distant mode, give Wheel 2 a different X value so the wheels do not overlap.
+- **A key behaves differently than expected:** Action Fandango changes appearance.
+  Check the game's controls or your input mod's settings.
+
+## Updating or removing
+
+Close the game before replacing or removing the mod folder. Preserve your saved
+settings and any dependency settings when updating. To remove Action Fandango,
+disable or remove its folder and restart; keep dependencies used by other mods.
+
+See the [changelog](CHANGELOG.md) for changes.
