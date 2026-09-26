@@ -1,0 +1,58 @@
+local fields = {
+    {id='Style', type='picker', group='Style', label='Style',
+        values={0,1}, labels={'Swap','Distant'}, default=0, tab=true, level=2},
+
+    {id='WheelsX', type='integer', group='Wheels', label='X',
+        min=-1000, max=1000, step=10, default=0,
+        order=1, visibleWhen='Style', visibleValues={0}},
+    {id='WheelsY', type='integer', group='Wheels', label='Y',
+        min=-1000, max=1000, step=10, default=0,
+        order=2, visibleWhen='Style', visibleValues={0}},
+    {id='WheelsSize', type='integer', group='Wheels', label='Size',
+        min=25, max=200, step=5, suffix='%', default=100,
+        order=3, visibleWhen='Style', visibleValues={0}},
+    {id='WheelsOpacity', type='integer', group='Wheels', label='Opacity',
+        min=0, max=100, step=5, suffix='%', default=100,
+        order=4, visibleWhen='Style', visibleValues={0}},
+
+    {id='Wheel1X', type='integer', group='Wheel1', label='X',
+        min=-1000, max=1000, step=10, default=0,
+        order=1, visibleWhen='Style', visibleValues={1}},
+    {id='Wheel1Y', type='integer', group='Wheel1', label='Y',
+        min=-1000, max=1000, step=10, default=0,
+        order=2, visibleWhen='Style', visibleValues={1}},
+    {id='Wheel1Size', type='integer', group='Wheel1', label='Size',
+        min=25, max=200, step=5, suffix='%', default=100,
+        order=3, visibleWhen='Style', visibleValues={1}},
+    {id='Wheel1Opacity', type='integer', group='Wheel1', label='Opacity',
+        min=0, max=100, step=5, suffix='%', default=100,
+        order=4, visibleWhen='Style', visibleValues={1}},
+
+    {id='Wheel2X', type='integer', group='Wheel2', label='X',
+        min=-1000, max=1000, step=10, default=360,
+        order=1, visibleWhen='Style', visibleValues={1}},
+    {id='Wheel2Y', type='integer', group='Wheel2', label='Y',
+        min=-1000, max=1000, step=10, default=0,
+        order=2, visibleWhen='Style', visibleValues={1}},
+    {id='Wheel2Size', type='integer', group='Wheel2', label='Size',
+        min=25, max=200, step=5, suffix='%', default=100,
+        order=3, visibleWhen='Style', visibleValues={1}},
+    {id='Wheel2Opacity', type='integer', group='Wheel2', label='Opacity',
+        min=0, max=100, step=5, suffix='%', default=100,
+        order=4, visibleWhen='Style', visibleValues={1}},
+}
+local template = {
+    name='Wheels', module='Fangdango', managed=true, category='player.quickslots', version='0.2.1',
+    targets={'switcher',abilities={properties={'opacity'}},consumables={properties={'opacity'}}},
+    description='Swap wheels in place or display both at separate positions.',
+    settings={},
+    menu={ target='module', enabled=true,fields=fields,
+      groups={
+        {id='Style',label='Style',heading=false,order=1},
+        {id='Wheels',label='Wheels',order=2},
+        {id='Wheel1',label='Wheel 1',order=3},
+        {id='Wheel2',label='Wheel 2',order=4},
+    }},
+}
+
+return template

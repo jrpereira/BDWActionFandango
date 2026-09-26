@@ -1,0 +1,2 @@
+-- Fangdango is loaded by ModCoreTemplates from Scripts/templates/mc.lua.
+-- UE4SS still expects an entry point for an enabled mod.

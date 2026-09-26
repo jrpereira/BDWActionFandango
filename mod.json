@@ -3,7 +3,7 @@
   "id": "Fangdango",
   "name": "Fangdango",
   "description": "Arrange your ability and consumable wheels to suit your playstyle. Show both at once or switch between them, with adjustable position, size, and opacity. A little choreography for your combat HUD.",
-  "version_source": "Scripts/templates/main.lua",
+  "version_source": "Scripts/templates/mc_wheels.lua",
   "dependencies": [
     {
       "id": "UE4SS",
