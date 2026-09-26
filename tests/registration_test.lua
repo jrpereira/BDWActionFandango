@@ -72,7 +72,7 @@ local originalStartup=package.loaded['mc.lua_startup']
 local originalDirectories=IterateGameDirectories
 IterateGameDirectories=function()
     return {mods={__name='Mods',__absolute_path='.',Fangdango={
-        __name='Fangdango',__absolute_path='Fangdango',Scripts={
+        __name='Fangdango',__absolute_path='Fangdango',__files={enabled={__name='enabled.txt'}},Scripts={
             __name='Scripts',templates={__name='templates',__files={
                 main={__name='mc.lua',__absolute_path='Fangdango/Scripts/templates/mc.lua'},
                 wheels={__name='mc_wheels.lua',__absolute_path='Fangdango/Scripts/templates/mc_wheels.lua'},

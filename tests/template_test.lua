@@ -39,6 +39,7 @@ local function widget(name)
         child.parent=self
         child.Slot={Padding={Left=0,Top=0,Right=0,Bottom=0},HorizontalAlignment=0,VerticalAlignment=0}
         function child.Slot:IsValid() return true end
+        function child.Slot:GetClass() return {GetName=function() return 'WidgetSwitcherSlot' end} end
         function child.Slot:SetPadding(value) self.Padding=value end
         function child.Slot:SetHorizontalAlignment(value) self.HorizontalAlignment=value end
         function child.Slot:SetVerticalAlignment(value) self.VerticalAlignment=value end
